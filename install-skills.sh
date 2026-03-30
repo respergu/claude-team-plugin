@@ -96,18 +96,20 @@ if [[ -n "$LOCAL_SOURCE" ]]; then
   SOURCE_DIR="$LOCAL_SOURCE"
   log "Using local source: $SOURCE_DIR"
 else
-  # Resolve version — use latest tag if not specified
+  # Resolve version — use latest tag if not specified, fall back to default branch
   if [[ -z "$VERSION" ]]; then
     VERSION=$(git ls-remote --tags --sort=-v:refname "$REPO_URL" 2>/dev/null \
       | grep -oE 'refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$' \
       | head -1 \
       | sed 's|refs/tags/||' || true)
-    [[ -n "$VERSION" ]] || die "Could not resolve latest version from $REPO_URL"
-    log "Resolved latest version: $VERSION"
+    if [[ -n "$VERSION" ]]; then
+      log "Resolved latest version: $VERSION"
+    else
+      log "No version tags found — using default branch"
+    fi
   fi
 
   TEMP_DIR=$(mktemp -d)
-  log "Cloning $REPO_URL at $VERSION..."
 
   # Use GITHUB_TOKEN if available (CI environments)
   CLONE_URL="$REPO_URL"
@@ -115,8 +117,15 @@ else
     CLONE_URL="${REPO_URL/https:\/\//https://x-access-token:${GITHUB_TOKEN}@}"
   fi
 
-  git clone --depth 1 --branch "$VERSION" "$CLONE_URL" "$TEMP_DIR" 2>/dev/null \
-    || die "Failed to clone $REPO_URL at $VERSION"
+  if [[ -n "$VERSION" ]]; then
+    log "Cloning $REPO_URL at $VERSION..."
+    git clone --depth 1 --branch "$VERSION" "$CLONE_URL" "$TEMP_DIR" 2>/dev/null \
+      || die "Failed to clone $REPO_URL at $VERSION"
+  else
+    log "Cloning $REPO_URL (default branch)..."
+    git clone --depth 1 "$CLONE_URL" "$TEMP_DIR" 2>/dev/null \
+      || die "Failed to clone $REPO_URL"
+  fi
 
   SOURCE_DIR="$TEMP_DIR"
 fi
