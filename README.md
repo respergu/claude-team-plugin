@@ -1,21 +1,42 @@
 # claude-team-plugin
 
-Shared Claude Code skills repository. Centralizes reusable AI-assisted development
-workflows so every repo gets the same capabilities via a single install step.
+Shared Claude Code plugin for team development workflows. Centralizes reusable
+AI-assisted skills so every repo gets the same capabilities.
 
 ## Skills
 
-| Skill | Description |
-|---|---|
-| [grill-me](skills/grill-me/) | Relentless interviewing to stress-test plans and designs |
-| [write-a-prd](skills/write-a-prd/) | Collaborative PRD creation through structured interviews |
-| [prd-to-issues](skills/prd-to-issues/) | Convert a PRD into actionable GitHub issues |
-| [tdd](skills/tdd/) | Test-driven development with vertical slices |
-| [improve-codebase-architecture](skills/improve-codebase-architecture/) | Surface architectural friction and propose deep-module refactors |
+| Skill | Description | Usage |
+|---|---|---|
+| [grill-me](skills/grill-me/) | Relentless interviewing to stress-test plans and designs | `/claude-team-plugin:grill-me` |
+| [write-a-prd](skills/write-a-prd/) | Collaborative PRD creation through structured interviews | `/claude-team-plugin:write-a-prd` |
+| [prd-to-issues](skills/prd-to-issues/) | Convert a PRD into actionable GitHub issues | `/claude-team-plugin:prd-to-issues` |
+| [tdd](skills/tdd/) | Test-driven development with vertical slices | `/claude-team-plugin:tdd` |
+| [improve-codebase-architecture](skills/improve-codebase-architecture/) | Surface architectural friction and propose deep-module refactors | `/claude-team-plugin:improve-codebase-architecture` |
 
 ## Installation
 
-### Option 1: Install script
+### Plugin install (recommended)
+
+```bash
+# Install for yourself
+claude plugin install claude-team-plugin
+
+# Install for the whole project (committed to .claude/settings.json)
+claude plugin install claude-team-plugin --scope project
+```
+
+Skills are automatically namespaced — use `/claude-team-plugin:skill-name` to invoke them. Hooks and settings are applied automatically when the plugin is enabled.
+
+### Local development
+
+```bash
+# Load the plugin from a local directory
+claude --plugin-dir ./claude-team-plugin
+```
+
+### Alternative: Install script
+
+For CI environments or setups without the Claude Code CLI:
 
 ```bash
 # Install all skills
@@ -24,16 +45,11 @@ workflows so every repo gets the same capabilities via a single install step.
 # Install specific skills at a pinned version
 ./install-skills.sh --version v1.0.0 --skills "grill-me,tdd"
 
-# Custom target directory
-./install-skills.sh --target .claude/skills
-
 # Dry run
 ./install-skills.sh --dry-run
 ```
 
-### Option 2: GitHub Actions
-
-Add to your workflow:
+### Alternative: GitHub Actions
 
 ```yaml
 steps:
@@ -44,7 +60,7 @@ steps:
       skills: "grill-me,tdd"
 ```
 
-### Option 3: Config file
+### Alternative: Config file
 
 Create `.agent-skills.json` in your repo (see [.agent-skills.json.example](.agent-skills.json.example)):
 
@@ -64,9 +80,9 @@ Tags follow semver (`v1.0.0`). A floating major tag (`v1`) points to the latest 
 
 | Change | Bump |
 |---|---|
-| Removed skills, breaking installer changes, skill format changes | MAJOR |
-| New skills, new rules in existing skills, new installer features | MINOR |
-| Typo fixes, wording improvements, installer bug fixes | PATCH |
+| Removed skills, breaking changes, skill format changes | MAJOR |
+| New skills, new rules in existing skills, new features | MINOR |
+| Typo fixes, wording improvements, bug fixes | PATCH |
 
 ## Contributing
 

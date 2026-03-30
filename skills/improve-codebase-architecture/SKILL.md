@@ -1,14 +1,6 @@
 ---
-name: improve-codebase-architecture
 description: Analyze codebase for architectural friction and propose module-deepening refactors
-allowed-tools: Agent, Read, Glob, Grep, Bash
 model: opus
-tags: architecture, refactoring
-format-version: 1
-user-invocable: true
-metadata:
-  author: mattpocock
-  version: 1.0.0
 ---
 
 Explore a codebase like an AI would, surface architectural friction, discover opportunities for improving testability, and propose module-deepening refactors as GitHub issue RFCs.

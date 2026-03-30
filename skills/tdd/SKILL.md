@@ -1,14 +1,6 @@
 ---
-name: tdd
 description: Test-driven development with vertical slices and behavior-focused tests
-allowed-tools: Agent, Read, Glob, Grep, Bash, Edit, Write
 model: sonnet
-tags: testing, development
-format-version: 1
-user-invocable: true
-metadata:
-  author: mattpocock
-  version: 1.0.0
 ---
 
 Implement features using strict test-driven development with vertical slices.

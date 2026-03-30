@@ -12,17 +12,30 @@
 ## Modifying an existing skill
 
 1. Edit the `SKILL.md` or reference files
-2. Bump the `metadata.version` in frontmatter if it's a significant change
-3. Add a CHANGELOG entry under `[Unreleased]`
-4. Open a PR
+2. Add a CHANGELOG entry under `[Unreleased]`
+3. Open a PR
 
 ## Skill naming
 
 - Use lowercase-kebab-case: `write-a-prd`, `grill-me`
-- The frontmatter `name` field must exactly match the directory name
+- The directory name becomes the skill's identifier
+- When installed as a plugin, skills are invoked as `/claude-team-plugin:<skill-name>`
 - Do not use the `fff-` prefix — that is reserved for project-specific local skills
 
 ## Testing locally
+
+### As a plugin (recommended)
+
+```bash
+# Load the plugin from the local directory
+claude --plugin-dir ./claude-team-plugin
+
+# Then invoke skills with the namespaced name
+# /claude-team-plugin:grill-me
+# /claude-team-plugin:tdd
+```
+
+### Via install script
 
 ```bash
 # Dry run to see what would be installed
@@ -36,12 +49,13 @@
 
 CI automatically checks:
 - Valid YAML frontmatter on every `SKILL.md`
-- Frontmatter `name` matches directory name
 - Required `description` field is present
 - CHANGELOG has entries under `[Unreleased]`
 - `manifest.json` is valid and includes all skills
+- `plugin.json` is valid JSON with required fields
 - `shellcheck` passes on `install-skills.sh`
 
 ## Versioning
 
 See the [README](../README.md#versioning) for semver guidelines.
+When releasing, bump the version in both `manifest.json` and `.claude-plugin/plugin.json`.

@@ -1,13 +1,23 @@
 # claude-team-plugin
 
-Shared Claude Code skills repository for the team. Centralizes reusable AI-assisted
+Shared Claude Code plugin for the team. Centralizes reusable AI-assisted
 development workflows so every repo gets the same capabilities.
 
-## Repository purpose
+## Plugin structure
 
-This repo distributes Claude Code skills via:
-1. **Direct install** — `install-skills.sh` copies skills into any repo's `.claude/skills/`
-2. **GitHub Actions** — `action.yml` composite action for CI pipelines
+This repo is a **Claude Code plugin**. The plugin manifest lives at
+`.claude-plugin/plugin.json`. When installed, Claude Code automatically
+discovers skills, hooks, and settings from the plugin root:
+
+- **Skills** — `skills/<name>/SKILL.md` (invoked as `/claude-team-plugin:<name>`)
+- **Hooks** — `hooks/hooks.json` (fire automatically when plugin is enabled)
+- **Settings** — `settings.json` (applied as defaults when plugin is enabled)
+
+## Distribution
+
+1. **Plugin install** (primary) — `claude plugin install claude-team-plugin`
+2. **Install script** (CI fallback) — `install-skills.sh` copies skills into `.claude/skills/`
+3. **GitHub Actions** — `action.yml` composite action for CI pipelines
 
 ## How to add a skill
 
@@ -21,12 +31,14 @@ This repo distributes Claude Code skills via:
 ## Naming conventions
 
 - Skill directories: `lowercase-kebab-case`
-- Frontmatter `name` field must exactly match directory name
+- Frontmatter `description` field is required
 - No `fff-` prefix — that's reserved for project-specific local skills
 
 ## Key files
 
-- `install-skills.sh` — standalone installer (bash + git only)
+- `.claude-plugin/plugin.json` — plugin manifest (name, version, author)
+- `settings.json` — default settings applied when plugin is enabled
+- `hooks/hooks.json` — lifecycle hooks (auto-discovered by plugin system)
+- `install-skills.sh` — standalone installer fallback (bash + git only)
 - `action.yml` — GitHub Actions composite action wrapping the installer
 - `manifest.json` — auto-generated index of all skills
-- `.agent-skills.json` — config file for consuming repos (see `.agent-skills.json.example`)

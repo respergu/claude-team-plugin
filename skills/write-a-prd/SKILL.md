@@ -1,14 +1,6 @@
 ---
-name: write-a-prd
 description: Collaboratively create a PRD through interviews, codebase analysis, and modular design
-allowed-tools: Agent, Read, Glob, Grep, Bash, WebFetch
 model: opus
-tags: planning, documentation
-format-version: 1
-user-invocable: true
-metadata:
-  author: mattpocock
-  version: 1.0.0
 ---
 
 Create a Product Requirements Document through a collaborative, structured process. Follow these steps (skip any that are not needed):
