@@ -15,23 +15,56 @@ AI-assisted skills so every repo gets the same capabilities.
 
 ## Installation
 
-### Plugin install (recommended)
+### Step 1: Register the marketplace (one-time)
+
+```bash
+# Via GitHub shorthand
+/plugin marketplace add respergu/claude-team-plugin
+```
+
+### Step 2: Install the plugin
 
 ```bash
 # Install for yourself
-claude plugin install claude-team-plugin
+/plugin install claude-team-plugin@claude-team-marketplace
 
 # Install for the whole project (committed to .claude/settings.json)
-claude plugin install claude-team-plugin --scope project
+claude plugin install claude-team-plugin@claude-team-marketplace --scope project
 ```
 
 Skills are automatically namespaced — use `/claude-team-plugin:skill-name` to invoke them. Hooks and settings are applied automatically when the plugin is enabled.
 
+### Auto-registration for teams
+
+Add to your project's `.claude/settings.json` so every team member gets the marketplace automatically:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "claude-team-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "respergu/claude-team-plugin"
+      }
+    }
+  }
+}
+```
+
+Then each team member just runs:
+```bash
+/plugin install claude-team-plugin@claude-team-marketplace
+```
+
 ### Local development
 
 ```bash
-# Load the plugin from a local directory
+# Load the plugin directly from a local directory
 claude --plugin-dir ./claude-team-plugin
+
+# Or register as a local marketplace
+/plugin marketplace add ./
+/plugin install claude-team-plugin@claude-team-marketplace
 ```
 
 ### Alternative: Install script

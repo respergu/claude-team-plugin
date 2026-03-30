@@ -10,13 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Plugin manifest (`.claude-plugin/plugin.json`) for native Claude Code plugin install
+- Marketplace catalog (`.claude-plugin/marketplace.json`) for plugin discovery and install
 - Default `settings.json` for plugin-level configuration
 - Namespaced skill invocation (`/claude-team-plugin:<skill-name>`)
+- Team auto-registration via `extraKnownMarketplaces` in settings.json
 
 ### Changed
 
 - Simplified SKILL.md frontmatter to use plugin-native `description` field
-- README and docs updated with plugin install as primary method
+- README and docs updated with marketplace install as primary method
 
 ## [v1.0.0] - 2026-03-30
 
