@@ -1,14 +1,6 @@
 ---
-name: prd-to-issues
 description: Convert a PRD into actionable GitHub issues
-allowed-tools: Agent, Read, Glob, Grep, Bash
 model: sonnet
-tags: planning, project-management
-format-version: 1
-user-invocable: true
-metadata:
-  author: mattpocock
-  version: 1.0.0
 ---
 
 Convert a Product Requirements Document (PRD) into individual, actionable GitHub issues.

@@ -10,6 +10,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate plugin.json
+        run: |
+          if [[ ! -f .claude-plugin/plugin.json ]]; then
+            echo "ERROR: .claude-plugin/plugin.json not found"
+            exit 1
+          fi
+          python3 -c "
+          import json, sys
+          p = json.load(open('.claude-plugin/plugin.json'))
+          missing = [f for f in ['name', 'version'] if f not in p]
+          if missing:
+              print(f'ERROR: plugin.json missing required fields: {missing}')
+              sys.exit(1)
+          print(f'OK: plugin.json ({p[\"name\"]} v{p[\"version\"]})')
+          "
+
       - name: Validate SKILL.md frontmatter
         run: |
           errors=0
@@ -21,17 +37,6 @@ jobs:
               echo "ERROR: $skill_dir is missing SKILL.md"
               errors=$((errors + 1))
               continue
-            fi
-
-            # Extract frontmatter name field
-            fm_name=$(sed -n '/^---$/,/^---$/p' "$skill_file" | grep '^name:' | head -1 | sed 's/^name:[[:space:]]*//')
-
-            if [[ -z "$fm_name" ]]; then
-              echo "ERROR: $skill_file is missing 'name' in frontmatter"
-              errors=$((errors + 1))
-            elif [[ "$fm_name" != "$skill_name" ]]; then
-              echo "ERROR: $skill_file frontmatter name '$fm_name' does not match directory '$skill_name'"
-              errors=$((errors + 1))
             fi
 
             # Check for required description field
