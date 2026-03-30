@@ -1,0 +1,90 @@
+name: Validate
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate SKILL.md frontmatter
+        run: |
+          errors=0
+          for skill_dir in skills/*/; do
+            skill_name=$(basename "$skill_dir")
+            skill_file="$skill_dir/SKILL.md"
+
+            if [[ ! -f "$skill_file" ]]; then
+              echo "ERROR: $skill_dir is missing SKILL.md"
+              errors=$((errors + 1))
+              continue
+            fi
+
+            # Extract frontmatter name field
+            fm_name=$(sed -n '/^---$/,/^---$/p' "$skill_file" | grep '^name:' | head -1 | sed 's/^name:[[:space:]]*//')
+
+            if [[ -z "$fm_name" ]]; then
+              echo "ERROR: $skill_file is missing 'name' in frontmatter"
+              errors=$((errors + 1))
+            elif [[ "$fm_name" != "$skill_name" ]]; then
+              echo "ERROR: $skill_file frontmatter name '$fm_name' does not match directory '$skill_name'"
+              errors=$((errors + 1))
+            fi
+
+            # Check for required description field
+            fm_desc=$(sed -n '/^---$/,/^---$/p' "$skill_file" | grep '^description:' | head -1)
+            if [[ -z "$fm_desc" ]]; then
+              echo "ERROR: $skill_file is missing 'description' in frontmatter"
+              errors=$((errors + 1))
+            fi
+
+            echo "OK: $skill_name"
+          done
+
+          if [[ $errors -gt 0 ]]; then
+            echo "Found $errors error(s)"
+            exit 1
+          fi
+
+      - name: Check CHANGELOG has Unreleased section
+        run: |
+          if ! grep -q '\[Unreleased\]' CHANGELOG.md; then
+            echo "ERROR: CHANGELOG.md is missing [Unreleased] section"
+            exit 1
+          fi
+          echo "OK: CHANGELOG.md has [Unreleased] section"
+
+      - name: Validate manifest.json
+        run: |
+          if ! python3 -c "import json; json.load(open('manifest.json'))" 2>/dev/null; then
+            echo "ERROR: manifest.json is not valid JSON"
+            exit 1
+          fi
+
+          # Check that every skill directory has a manifest entry
+          for skill_dir in skills/*/; do
+            skill_name=$(basename "$skill_dir")
+            if ! python3 -c "
+          import json, sys
+          m = json.load(open('manifest.json'))
+          names = [s['name'] for s in m.get('skills', [])]
+          sys.exit(0 if '$skill_name' in names else 1)
+          " 2>/dev/null; then
+              echo "ERROR: Skill '$skill_name' missing from manifest.json"
+              exit 1
+            fi
+          done
+          echo "OK: manifest.json is valid and complete"
+
+      - name: Shellcheck install script
+        run: |
+          if command -v shellcheck &>/dev/null; then
+            shellcheck install-skills.sh
+          else
+            echo "shellcheck not found, installing..."
+            sudo apt-get update -qq && sudo apt-get install -qq -y shellcheck
+            shellcheck install-skills.sh
+          fi

@@ -1,0 +1,56 @@
+name: "Install Agent Skills"
+description: "Install Claude Code skills from the shared repository into your project"
+author: "respergu"
+
+inputs:
+  version:
+    description: "Semver tag to install (e.g., v1.0.0). Defaults to latest."
+    required: false
+    default: ""
+  skills:
+    description: "Comma-separated skill names to install. Defaults to all."
+    required: false
+    default: ""
+  target:
+    description: "Target directory for installed skills."
+    required: false
+    default: ".claude/skills"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Clone agent-skills repo
+      shell: bash
+      run: |
+        TEMP_DIR=$(mktemp -d)
+        echo "AGENT_SKILLS_TEMP=$TEMP_DIR" >> "$GITHUB_ENV"
+
+        CLONE_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+        VERSION="${{ inputs.version }}"
+        if [[ -n "$VERSION" ]]; then
+          git clone --depth 1 --branch "$VERSION" "$CLONE_URL" "$TEMP_DIR"
+        else
+          git clone --depth 1 "$CLONE_URL" "$TEMP_DIR"
+        fi
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Install skills
+      shell: bash
+      run: |
+        ARGS=(--local-source "$AGENT_SKILLS_TEMP" --target "${{ inputs.target }}")
+
+        if [[ -n "${{ inputs.skills }}" ]]; then
+          ARGS+=(--skills "${{ inputs.skills }}")
+        fi
+
+        bash "$AGENT_SKILLS_TEMP/install-skills.sh" "${ARGS[@]}"
+
+    - name: Cleanup
+      shell: bash
+      if: always()
+      run: |
+        if [[ -n "${AGENT_SKILLS_TEMP:-}" && -d "${AGENT_SKILLS_TEMP:-}" ]]; then
+          rm -rf "$AGENT_SKILLS_TEMP"
+        fi

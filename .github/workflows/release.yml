@@ -1,0 +1,104 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+
+      - name: Validate CHANGELOG entry exists
+        run: |
+          VERSION="${{ steps.version.outputs.tag }}"
+          SEMVER="${VERSION#v}"
+          if ! grep -q "\[$SEMVER\]" CHANGELOG.md && ! grep -q "\[$VERSION\]" CHANGELOG.md; then
+            echo "ERROR: CHANGELOG.md has no entry for $VERSION"
+            exit 1
+          fi
+
+      - name: Regenerate manifest.json
+        run: |
+          python3 - <<'PYEOF'
+          import json, re, os
+
+          skills = []
+          skills_dir = "skills"
+
+          for name in sorted(os.listdir(skills_dir)):
+              skill_file = os.path.join(skills_dir, name, "SKILL.md")
+              if not os.path.isfile(skill_file):
+                  continue
+
+              with open(skill_file) as f:
+                  content = f.read()
+
+              # Parse YAML frontmatter
+              fm_match = re.match(r'^---\n(.*?)\n---', content, re.DOTALL)
+              if not fm_match:
+                  continue
+
+              fm = fm_match.group(1)
+              entry = {"name": name}
+
+              for field in ["description", "model"]:
+                  m = re.search(rf'^{field}:\s*(.+)$', fm, re.MULTILINE)
+                  if m:
+                      entry[field] = m.group(1).strip()
+
+              tags_m = re.search(r'^tags:\s*(.+)$', fm, re.MULTILINE)
+              if tags_m:
+                  entry["tags"] = [t.strip() for t in tags_m.group(1).split(",")]
+
+              skills.append(entry)
+
+          manifest = {
+              "name": "claude-team-plugin",
+              "version": os.environ.get("GITHUB_REF_NAME", "").lstrip("v") or "0.0.0",
+              "description": "Shared Claude Code skills for team development workflows",
+              "skills": skills,
+          }
+
+          with open("manifest.json", "w") as f:
+              json.dump(manifest, f, indent=2)
+              f.write("\n")
+
+          print(f"Generated manifest.json with {len(skills)} skills")
+          PYEOF
+
+      - name: Extract changelog section
+        id: changelog
+        run: |
+          VERSION="${{ steps.version.outputs.tag }}"
+          SEMVER="${VERSION#v}"
+          # Extract the section for this version
+          NOTES=$(sed -n "/## \[${SEMVER}\]\|## \[${VERSION}\]/,/## \[/p" CHANGELOG.md | head -n -1 | tail -n +2)
+          echo "notes<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$NOTES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
+          body: ${{ steps.changelog.outputs.notes }}
+          draft: false
+          prerelease: false
+
+      - name: Update floating major version tag
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          MAJOR=$(echo "$TAG" | grep -oE '^v[0-9]+')
+          git tag -f "$MAJOR" "$TAG"
+          git push origin "$MAJOR" --force
