@@ -107,6 +107,30 @@ Create `.agent-skills.json` in your repo (see [.agent-skills.json.example](.agen
 
 Then run `./install-skills.sh` with no arguments — it reads the config automatically.
 
+## Plugin vs `install-skills.sh` — Why we recommend the plugin
+
+This repo supports two installation approaches. **We recommend the plugin marketplace** for team use because it treats skills, hooks, settings, and resources as a single distributable unit — not loose files to copy around.
+
+| Aspect | Plugin + Marketplace | `install-skills.sh` |
+|---|---|---|
+| **Install** | `/plugin install claude-team-plugin@claude-team-marketplace` | Run bash script, manage config file |
+| **What gets installed** | Skills, hooks, settings, resources — everything | Skills only (copies `SKILL.md` files) |
+| **Hooks** | Fire automatically when plugin is enabled | Must be set up manually per project |
+| **Namespacing** | Automatic: `/claude-team-plugin:grill-me` — no conflicts | Flat: `/grill-me` — can collide with other skills |
+| **Updates** | `claude plugin update` with version detection | Manual re-run; no update awareness |
+| **Team rollout** | Add `extraKnownMarketplaces` to `.claude/settings.json` — done | Every dev runs the script or CI does it |
+| **Config** | `userConfig` can prompt for values (API keys, preferences) | No config mechanism |
+| **Persistent data** | `${CLAUDE_PLUGIN_DATA}` directory survives updates | No persistence concept |
+| **Versioning** | Semver in `plugin.json`; Claude Code detects new versions | `.skills-version` file; no detection |
+
+### Why the plugin approach matters for teams
+
+The bash script copies skill files, but a team needs more than prompts — it needs **shared hooks** (e.g., pre-commit checks, cleanup automation), **default settings** (model preferences, permission modes), and **reference resources** (templates, specs). The plugin system bundles all of these into a single installable package that stays in sync across the team.
+
+With the marketplace, onboarding a new developer is one command. With the script, it's "clone this, run that, also copy these hooks, and don't forget to set these settings." The plugin eliminates that friction.
+
+The install script and GitHub Actions composite action remain available as **fallbacks** for CI environments or setups where the Claude Code CLI isn't available.
+
 ## Versioning
 
 Tags follow semver (`v1.0.0`). A floating major tag (`v1`) points to the latest `v1.x.x`.
