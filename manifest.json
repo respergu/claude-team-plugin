@@ -1,0 +1,37 @@
+{
+  "name": "claude-team-plugin",
+  "version": "1.0.0",
+  "description": "Shared Claude Code skills for team development workflows",
+  "skills": [
+    {
+      "name": "grill-me",
+      "description": "Interview relentlessly about a plan or design until reaching shared understanding",
+      "tags": ["planning", "review"],
+      "model": "sonnet"
+    },
+    {
+      "name": "write-a-prd",
+      "description": "Collaboratively create a PRD through interviews, codebase analysis, and modular design",
+      "tags": ["planning", "documentation"],
+      "model": "opus"
+    },
+    {
+      "name": "prd-to-issues",
+      "description": "Convert a PRD into actionable GitHub issues",
+      "tags": ["planning", "project-management"],
+      "model": "sonnet"
+    },
+    {
+      "name": "tdd",
+      "description": "Test-driven development with vertical slices and behavior-focused tests",
+      "tags": ["testing", "development"],
+      "model": "sonnet"
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "description": "Analyze codebase for architectural friction and propose module-deepening refactors",
+      "tags": ["architecture", "refactoring"],
+      "model": "opus"
+    }
+  ]
+}
