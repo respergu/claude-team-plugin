@@ -24,15 +24,23 @@
 
 ## Testing locally
 
-### As a plugin (recommended)
+### As a plugin via local marketplace (recommended)
 
 ```bash
-# Load the plugin from the local directory
-claude --plugin-dir ./claude-team-plugin
+# Register the local directory as a marketplace
+/plugin marketplace add ./
 
-# Then invoke skills with the namespaced name
-# /claude-team-plugin:grill-me
-# /claude-team-plugin:tdd
+# Install the plugin from the local marketplace
+/plugin install claude-team-plugin@claude-team-marketplace
+
+# Or load directly without marketplace registration
+claude --plugin-dir ./claude-team-plugin
+```
+
+Then invoke skills with the namespaced name:
+```
+/claude-team-plugin:grill-me
+/claude-team-plugin:tdd
 ```
 
 ### Via install script
@@ -52,7 +60,8 @@ CI automatically checks:
 - Required `description` field is present
 - CHANGELOG has entries under `[Unreleased]`
 - `manifest.json` is valid and includes all skills
-- `plugin.json` is valid JSON with required fields
+- `plugin.json` is valid JSON with required fields (`name`, `version`)
+- `marketplace.json` is valid JSON with required fields (`name`, `owner`)
 - `shellcheck` passes on `install-skills.sh`
 
 ## Versioning

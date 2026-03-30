@@ -1,0 +1,15 @@
+{
+  "name": "claude-team-marketplace",
+  "owner": {
+    "name": "respergu"
+  },
+  "metadata": {
+    "description": "Team plugin marketplace for shared Claude Code skills"
+  },
+  "plugins": [
+    {
+      "name": "claude-team-plugin",
+      "source": "./"
+    }
+  ]
+}

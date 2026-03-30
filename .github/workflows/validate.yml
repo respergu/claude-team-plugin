@@ -26,6 +26,29 @@ jobs:
           print(f'OK: plugin.json ({p[\"name\"]} v{p[\"version\"]})')
           "
 
+      - name: Validate marketplace.json
+        run: |
+          if [[ ! -f .claude-plugin/marketplace.json ]]; then
+            echo "ERROR: .claude-plugin/marketplace.json not found"
+            exit 1
+          fi
+          python3 -c "
+          import json, sys
+          m = json.load(open('.claude-plugin/marketplace.json'))
+          errors = []
+          if 'name' not in m:
+              errors.append('missing required field: name')
+          if 'owner' not in m or 'name' not in m.get('owner', {}):
+              errors.append('missing required field: owner.name')
+          if 'plugins' not in m or not isinstance(m.get('plugins'), list):
+              errors.append('missing or invalid plugins array')
+          if errors:
+              for e in errors:
+                  print(f'ERROR: marketplace.json {e}')
+              sys.exit(1)
+          print(f'OK: marketplace.json ({m[\"name\"]}, {len(m[\"plugins\"])} plugin(s))')
+          "
+
       - name: Validate SKILL.md frontmatter
         run: |
           errors=0

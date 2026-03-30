@@ -5,9 +5,13 @@ development workflows so every repo gets the same capabilities.
 
 ## Plugin structure
 
-This repo is a **Claude Code plugin**. The plugin manifest lives at
-`.claude-plugin/plugin.json`. When installed, Claude Code automatically
-discovers skills, hooks, and settings from the plugin root:
+This repo is both a **Claude Code plugin** and a **plugin marketplace**.
+
+- `.claude-plugin/plugin.json` — plugin manifest (name, version, author)
+- `.claude-plugin/marketplace.json` — marketplace catalog listing this plugin
+
+When installed, Claude Code automatically discovers skills, hooks, and
+settings from the plugin root:
 
 - **Skills** — `skills/<name>/SKILL.md` (invoked as `/claude-team-plugin:<name>`)
 - **Hooks** — `hooks/hooks.json` (fire automatically when plugin is enabled)
@@ -15,7 +19,7 @@ discovers skills, hooks, and settings from the plugin root:
 
 ## Distribution
 
-1. **Plugin install** (primary) — `claude plugin install claude-team-plugin`
+1. **Marketplace** (primary) — register with `/plugin marketplace add respergu/claude-team-plugin`, then install with `/plugin install claude-team-plugin@claude-team-marketplace`
 2. **Install script** (CI fallback) — `install-skills.sh` copies skills into `.claude/skills/`
 3. **GitHub Actions** — `action.yml` composite action for CI pipelines
 
@@ -37,6 +41,7 @@ discovers skills, hooks, and settings from the plugin root:
 ## Key files
 
 - `.claude-plugin/plugin.json` — plugin manifest (name, version, author)
+- `.claude-plugin/marketplace.json` — marketplace catalog (lists plugins available for install)
 - `settings.json` — default settings applied when plugin is enabled
 - `hooks/hooks.json` — lifecycle hooks (auto-discovered by plugin system)
 - `install-skills.sh` — standalone installer fallback (bash + git only)
