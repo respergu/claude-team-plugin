@@ -2,15 +2,23 @@
   "hooks": {
     "PreToolUse": [
       {
-        "description": "Ensure .claude/skills directory exists before skill operations",
-        "command": "mkdir -p \"$CLAUDE_PROJECT_DIR/.claude/skills\""
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p \"$CLAUDE_PROJECT_DIR/.claude/skills\""
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "mcp__playwright",
-        "description": "Clean up temporary playwright screenshots after browser close",
-        "command": "rm -f \"$CLAUDE_PROJECT_DIR/.playwright-mcp/\"*.png 2>/dev/null || true"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rm -f \"$CLAUDE_PROJECT_DIR/.playwright-mcp/\"*.png 2>/dev/null || true"
+          }
+        ]
       }
     ]
   }
