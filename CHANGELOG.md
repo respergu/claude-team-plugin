@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Default `settings.json` for plugin-level configuration
 - Namespaced skill invocation (`/claude-team-plugin:<skill-name>`)
 - Team auto-registration via `extraKnownMarketplaces` in settings.json
+- Excalidraw MCP server for diagram creation (`.mcp.json`)
 
 ### Changed
 

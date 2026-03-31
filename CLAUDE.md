@@ -16,6 +16,7 @@ settings from the plugin root:
 - **Skills** — `skills/<name>/SKILL.md` (invoked as `/claude-team-plugin:<name>`)
 - **Hooks** — `hooks/hooks.json` (fire automatically when plugin is enabled)
 - **Settings** — `settings.json` (applied as defaults when plugin is enabled)
+- **MCP Servers** — `.mcp.json` (servers start automatically when plugin is enabled)
 
 ## Distribution
 
@@ -44,6 +45,7 @@ settings from the plugin root:
 - `.claude-plugin/marketplace.json` — marketplace catalog (lists plugins available for install)
 - `settings.json` — default settings applied when plugin is enabled
 - `hooks/hooks.json` — lifecycle hooks (auto-discovered by plugin system)
+- `.mcp.json` — bundled MCP servers (auto-discovered by plugin system)
 - `install-skills.sh` — standalone installer fallback (bash + git only)
 - `action.yml` — GitHub Actions composite action wrapping the installer
 - `manifest.json` — auto-generated index of all skills
