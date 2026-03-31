@@ -7,19 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-- Plugin manifest (`.claude-plugin/plugin.json`) for native Claude Code plugin install
-- Marketplace catalog (`.claude-plugin/marketplace.json`) for plugin discovery and install
-- Default `settings.json` for plugin-level configuration
-- Namespaced skill invocation (`/claude-team-plugin:<skill-name>`)
-- Team auto-registration via `extraKnownMarketplaces` in settings.json
-- Excalidraw MCP server for diagram creation (`.mcp.json`)
-
 ### Changed
 
-- Simplified SKILL.md frontmatter to use plugin-native `description` field
-- README and docs updated with marketplace install as primary method
+- Restructured from single root-level plugin to **3 separate plugins** in `plugins/` directory:
+  - `front-end-skills` — frontend-focused skills
+  - `back-end-skills` — backend-focused skills
+  - `core-skills` — core shared skills
+- Updated marketplace.json to list all 3 plugins
+- Each plugin scaffolded with `grill-me` skill
+- Removed old root-level plugin files (plugin.json, skills/, hooks/, settings.json, .mcp.json, manifest.json, install-skills.sh, action.yml)
 
 ## [v1.0.0] - 2026-03-30
 
