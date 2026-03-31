@@ -10,22 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate plugin.json
-        run: |
-          if [[ ! -f .claude-plugin/plugin.json ]]; then
-            echo "ERROR: .claude-plugin/plugin.json not found"
-            exit 1
-          fi
-          python3 -c "
-          import json, sys
-          p = json.load(open('.claude-plugin/plugin.json'))
-          missing = [f for f in ['name', 'version'] if f not in p]
-          if missing:
-              print(f'ERROR: plugin.json missing required fields: {missing}')
-              sys.exit(1)
-          print(f'OK: plugin.json ({p[\"name\"]} v{p[\"version\"]})')
-          "
-
       - name: Validate marketplace.json
         run: |
           if [[ ! -f .claude-plugin/marketplace.json ]]; then
@@ -49,27 +33,48 @@ jobs:
           print(f'OK: marketplace.json ({m[\"name\"]}, {len(m[\"plugins\"])} plugin(s))')
           "
 
-      - name: Validate SKILL.md frontmatter
+      - name: Validate plugin.json for each plugin
         run: |
           errors=0
-          for skill_dir in skills/*/; do
-            skill_name=$(basename "$skill_dir")
-            skill_file="$skill_dir/SKILL.md"
+          for plugin_dir in plugins/*/; do
+            plugin_name=$(basename "$plugin_dir")
+            plugin_file="$plugin_dir/.claude-plugin/plugin.json"
 
-            if [[ ! -f "$skill_file" ]]; then
-              echo "ERROR: $skill_dir is missing SKILL.md"
+            if [[ ! -f "$plugin_file" ]]; then
+              echo "ERROR: $plugin_dir is missing .claude-plugin/plugin.json"
               errors=$((errors + 1))
               continue
             fi
 
-            # Check for required description field
+            python3 -c "
+          import json, sys
+          p = json.load(open('$plugin_file'))
+          missing = [f for f in ['name', 'version'] if f not in p]
+          if missing:
+              print(f'ERROR: $plugin_file missing required fields: {missing}')
+              sys.exit(1)
+          print(f'OK: {p[\"name\"]} v{p[\"version\"]}')
+          " || errors=$((errors + 1))
+          done
+
+          if [[ $errors -gt 0 ]]; then
+            echo "Found $errors error(s)"
+            exit 1
+          fi
+
+      - name: Validate SKILL.md frontmatter
+        run: |
+          errors=0
+          for skill_file in plugins/*/skills/*/SKILL.md; do
+            [[ -f "$skill_file" ]] || continue
+
             fm_desc=$(sed -n '/^---$/,/^---$/p' "$skill_file" | grep '^description:' | head -1)
             if [[ -z "$fm_desc" ]]; then
               echo "ERROR: $skill_file is missing 'description' in frontmatter"
               errors=$((errors + 1))
+            else
+              echo "OK: $skill_file"
             fi
-
-            echo "OK: $skill_name"
           done
 
           if [[ $errors -gt 0 ]]; then
@@ -84,35 +89,3 @@ jobs:
             exit 1
           fi
           echo "OK: CHANGELOG.md has [Unreleased] section"
-
-      - name: Validate manifest.json
-        run: |
-          if ! python3 -c "import json; json.load(open('manifest.json'))" 2>/dev/null; then
-            echo "ERROR: manifest.json is not valid JSON"
-            exit 1
-          fi
-
-          # Check that every skill directory has a manifest entry
-          for skill_dir in skills/*/; do
-            skill_name=$(basename "$skill_dir")
-            if ! python3 -c "
-          import json, sys
-          m = json.load(open('manifest.json'))
-          names = [s['name'] for s in m.get('skills', [])]
-          sys.exit(0 if '$skill_name' in names else 1)
-          " 2>/dev/null; then
-              echo "ERROR: Skill '$skill_name' missing from manifest.json"
-              exit 1
-            fi
-          done
-          echo "OK: manifest.json is valid and complete"
-
-      - name: Shellcheck install script
-        run: |
-          if command -v shellcheck &>/dev/null; then
-            shellcheck install-skills.sh
-          else
-            echo "shellcheck not found, installing..."
-            sudo apt-get update -qq && sudo apt-get install -qq -y shellcheck
-            shellcheck install-skills.sh
-          fi

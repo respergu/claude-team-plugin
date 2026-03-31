@@ -1,5 +1,0 @@
-{
-  "version": "v1.0.0",
-  "target": ".claude/skills",
-  "skills": ["grill-me", "tdd", "write-a-prd"]
-}

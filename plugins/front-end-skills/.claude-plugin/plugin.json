@@ -1,0 +1,11 @@
+{
+  "name": "front-end-skills",
+  "description": "Frontend-focused Claude Code skills for the FFF team",
+  "version": "1.0.0",
+  "author": {
+    "name": "respergu"
+  },
+  "repository": "https://github.com/respergu/claude-team-plugin",
+  "license": "MIT",
+  "keywords": ["frontend", "react", "css", "ui"]
+}

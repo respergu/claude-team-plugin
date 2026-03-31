@@ -8,8 +8,16 @@
   },
   "plugins": [
     {
-      "name": "claude-team-plugin",
-      "source": "./"
+      "name": "front-end-skills",
+      "source": "./plugins/front-end-skills"
+    },
+    {
+      "name": "back-end-skills",
+      "source": "./plugins/back-end-skills"
+    },
+    {
+      "name": "core-skills",
+      "source": "./plugins/core-skills"
     }
   ]
 }
