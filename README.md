@@ -13,6 +13,14 @@ AI-assisted skills so every repo gets the same capabilities.
 | [tdd](skills/tdd/) | Test-driven development with vertical slices | `/claude-team-plugin:tdd` |
 | [improve-codebase-architecture](skills/improve-codebase-architecture/) | Surface architectural friction and propose deep-module refactors | `/claude-team-plugin:improve-codebase-architecture` |
 
+## MCP Servers
+
+The plugin bundles MCP servers that are automatically available when the plugin is enabled:
+
+| Server | Description | Source |
+|---|---|---|
+| [excalidraw](https://github.com/excalidraw/excalidraw-mcp) | Create hand-drawn diagrams and visualizations | Remote (`mcp.excalidraw.com`) |
+
 ## Installation
 
 ### Step 1: Register the marketplace (one-time)
