@@ -1,7 +1,7 @@
 {
   "name": "claude-team-plugin",
   "description": "Shared Claude Code skills for team development workflows",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": {
     "name": "respergu"
   },
